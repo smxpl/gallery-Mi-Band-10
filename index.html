@@ -2,16 +2,13 @@
 <html>
 <head>
     <title>Mi Band 10 Gallery Generator</title>
-    <style>
-        body { font-family: Arial; padding: 20px; }
-        .box { border: 1px solid #ccc; padding: 20px; width: 400px; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <h2>Create Your Mi Band 10 Gallery</h2>
 
-<div class="box">
+<div class="container">
     <form action="/upload" method="POST" enctype="multipart/form-data">
         <label>Select 2–10 images:</label><br><br>
         <input type="file" name="photos" multiple accept="image/*"><br><br>
