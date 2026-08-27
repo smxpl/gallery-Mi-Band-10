@@ -12,18 +12,22 @@ app.use(express.static('public'));
 
 app.post('/upload', upload.array('images'), async (req, res) => {
     try {
-        const zip = new AdmZip("base.rpk");
+        // Load your existing base.rpk from the ROOT of your repo
+        const zip = new AdmZip(path.join(__dirname, 'base.rpk'));
         const outputZip = new AdmZip();
 
+        // Copy everything except gallery images
         zip.getEntries().forEach(entry => {
             if (!entry.entryName.startsWith("assets/gallery/")) {
                 outputZip.addFile(entry.entryName, entry.getData());
             }
         });
 
+        // Add new gallery images
         let index = 1;
         for (const file of req.files) {
             const outputPath = `temp_${index}.png`;
+
             await sharp(file.path)
                 .resize(480, 480)
                 .png()
@@ -35,10 +39,12 @@ app.post('/upload', upload.array('images'), async (req, res) => {
             index++;
         }
 
+        // Save final RPK
         const outputName = "custom_gallery.rpk";
         outputZip.writeZip(outputName);
 
-        res.download(outputName);
+        // FIXED: send the file from the correct location
+        res.download(path.join(__dirname, outputName));
     } catch (err) {
         console.error(err);
         res.status(500).send("Error processing RPK");
@@ -52,5 +58,6 @@ app.get('/', (req, res) => {
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
+
 
 
