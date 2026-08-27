@@ -21,6 +21,7 @@
   "homepage": "https://github.com/smxpl/MiBand10-RPK-Generator#readme",
   "dependencies": {
     "express": "^5.2.1",
-    "multer": "^2.2.0"
+    "multer": "^2.2.0",
+    "sharp": "^0.35.4"
   }
 }
