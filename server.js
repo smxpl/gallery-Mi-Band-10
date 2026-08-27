@@ -8,7 +8,7 @@ const path = require('path');
 const app = express();
 const upload = multer({ dest: 'uploads/' });
 
-app.use(express.static(__dirname));
+app.use(express.static('public'));
 
 app.post('/upload', upload.array('images'), async (req, res) => {
     try {
