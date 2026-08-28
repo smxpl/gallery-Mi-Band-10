@@ -1,0 +1,28 @@
+{
+  "name": "miband10-rpk-generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smxpl/MiBand10-RPK-Generator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/smxpl/MiBand10-RPK-Generator/issues"
+  },
+  "homepage": "https://github.com/smxpl/MiBand10-RPK-Generator#readme",
+  "dependencies": {
+    "adm-zip": "^0.6.0",
+    "express": "^5.2.1",
+    "multer": "^2.2.0",
+    "sharp": "^0.35.4"
+  }
+}

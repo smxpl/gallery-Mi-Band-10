@@ -1,0 +1,194 @@
+<template>
+  <div class="main-container">
+    <!-- VIEW A: THE VISUAL GALLERY -->
+    <div if="{{ currentView === 'gallery' }}" class="panel gallery-bg">
+      
+      <!-- Using a native Stack layout element lets hardware layers separate cleanly -->
+      <stack class="layer-stack">
+        
+        <!-- Touch Layer 1: Bottom Layer - Dedicated Image Slider Clicker -->
+        <div class="gallery-clicker" onclick="nextImage">
+          <div if="{{imageIndex === 1}}" class="slide"><image src="/common/img1.png" class="gallery-image"></image></div>
+          <div if="{{imageIndex === 2}}" class="slide"><image src="/common/img2.png" class="gallery-image"></image></div>
+          <div if="{{imageIndex === 3}}" class="slide"><image src="/common/img3.png" class="gallery-image"></image></div>
+          <div if="{{imageIndex === 4}}" class="slide"><image src="/common/img4.png" class="gallery-image"></image></div>
+          <div if="{{imageIndex === 5}}" class="slide"><image src="/common/img5.png" class="gallery-image"></image></div>
+          <div if="{{imageIndex === 6}}" class="slide"><image src="/common/img6.png" class="gallery-image"></image></div>
+          <div if="{{imageIndex === 7}}" class="slide"><image src="/common/img7.png" class="gallery-image"></image></div>
+          <div if="{{imageIndex === 8}}" class="slide"><image src="/common/img8.png" class="gallery-image"></image></div>
+          <div if="{{imageIndex === 9}}" class="slide"><image src="/common/img9.png" class="gallery-image"></image></div>
+          <div if="{{imageIndex === 10}}" class="slide"><image src="/common/img10.png" class="gallery-image"></image></div>
+        </div>
+
+        <!-- Touch Layer 2: Top Layer - Fully Independent Row for Info Button -->
+        <div class="top-row-overlay">
+          <div class="info-button" onclick="goToAbout">
+            <text class="info-icon-text">i</text>
+          </div>
+        </div>
+
+      </stack>
+
+    </div>
+
+    <!-- VIEW B: THE ABOUT BRANDING SCREEN -->
+    <div if="{{ currentView === 'about' }}" class="panel about-bg" onswipe="handleSwipe">
+      <div class="about-content">
+        <div class="avatar-circle">
+          <image src="/common/icon.png" class="avatar-img"></image>
+        </div>
+        
+        <text class="creator-title">Created By</text>
+        <text class="creator-name">yourmombeanbo       (◣ _ ◢)メ</text> 
+        
+        <text class="hint-text">Swipe Right to Return</text>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  private: {
+    currentView: 'gallery', 
+    imageIndex: 1,          
+    totalImages: 10 
+  },
+
+  nextImage() {
+    this.imageIndex++
+    if (this.imageIndex > this.totalImages) {
+      this.imageIndex = 1
+    }
+  },
+
+  goToAbout() {
+    this.currentView = 'about'
+  },
+
+  handleSwipe(evt) {
+    if (evt.direction === 'right') {
+      this.currentView = 'gallery'
+    }
+  }
+}
+</script>
+
+<style>
+.main-container {
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.panel {
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.layer-stack {
+  width: 100%;
+  height: 100%;
+}
+
+.gallery-bg {
+  background-color: #000000;
+}
+
+/* The stack automatically isolates this click wrapper away from your photo elements */
+.top-row-overlay {
+  width: 100%;
+  height: 80px;
+  margin-top: 15px;
+  justify-content: center;
+  align-items: center;
+}
+
+.info-button {
+  width: 50px; /* Sizing slightly expanded for reliable touch targets */
+  height: 50px;
+  border-radius: 25px;
+  background-color: #333333;
+  justify-content: center;
+  align-items: center;
+}
+
+.info-icon-text {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.gallery-clicker {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.slide {
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.gallery-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* About Branding Panel View Components */
+.about-bg {
+  background-color: #000000;
+}
+
+.about-content {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+  border-width: 3px;
+  border-color: #ff6b00;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+}
+
+.creator-title {
+  color: #888888;
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.creator-name {
+  color: #ffffff;
+  font-size: 22px; 
+  font-weight: bold;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.hint-text {
+  color: #444444;
+  font-size: 16px;
+}
+</style>
+
+
+
+
