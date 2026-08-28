@@ -16,13 +16,23 @@ app.get('/', (req, res) => {
 
 app.post('/upload', upload.array('images'), async (req, res) => {
     try {
+        // Correct folder structure for YOUR repo
         const baseFolder = path.join(__dirname, 'gallery', 'src');
-        const galleryFolder = path.join(baseFolder, 'assets', 'common');
 
+        // Your repo uses gallery/src/common, NOT gallery/src/assets/common
+        const galleryFolder = path.join(baseFolder, 'common');
+
+        // Ensure folder exists (Linux requires this)
+        if (!fs.existsSync(galleryFolder)) {
+            return res.status(500).send("Gallery folder missing on server");
+        }
+
+        // Clear existing images
         fs.readdirSync(galleryFolder).forEach(file => {
             fs.unlinkSync(path.join(galleryFolder, file));
         });
 
+        // Process uploaded images
         let index = 1;
         for (const file of req.files) {
             const outputPath = path.join(galleryFolder, `img_${index}.png`);
@@ -36,6 +46,7 @@ app.post('/upload', upload.array('images'), async (req, res) => {
             index++;
         }
 
+        // Build RPK ZIP
         const outputZip = new AdmZip();
 
         const addFolderToZip = (folderPath, zipPath = "") => {
