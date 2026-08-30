@@ -1,3 +1,25 @@
+const express = require('express');
+const app = express();
+
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+
+const fs = require('fs');
+const path = require('path');
+const sharp = require('sharp');
+const AdmZip = require('adm-zip');
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Serve your frontend
+app.use(express.static('public'));
+
+// Homepage fallback
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Upload route enforcing dynamic counts, minimum constraints (2 photos), and image cloning
 app.post('/upload', upload.array('images'), async (req, res) => {
     try {
@@ -94,3 +116,11 @@ app.post('/upload', upload.array('images'), async (req, res) => {
         res.status(500).send("Server compilation backend runtime error.");
     }
 });
+
+// --- RENDER PORT BIND FIX ---
+// Render forces you to use their dynamic port system (PORT 10000 by default)
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running safely on port ${PORT}`);
+});
+
