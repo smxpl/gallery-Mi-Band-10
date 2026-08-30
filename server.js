@@ -34,13 +34,14 @@ app.post('/upload', upload.array('images'), async (req, res) => {
             fs.mkdirSync(galleryFolder, { recursive: true });
         }
 
-        // Clean out old images safely
-        fs.readdirSync(galleryFolder).forEach(file => {
-            const filePath = path.join(galleryFolder, file);
-            if (fs.statSync(filePath).isFile()) {
-                fs.unlinkSync(filePath);
-            }
-        });
+        // Clean out old images safely (Keeps your icon safe!)
+fs.readdirSync(galleryFolder).forEach(file => {
+    const filePath = path.join(galleryFolder, file);
+    // 🌟 FIXED: Added "file !== 'icon.png'" so your icon never gets deleted!
+    if (fs.statSync(filePath).isFile() && file !== 'icon.png') {
+        fs.unlinkSync(filePath);
+    }
+});
 
         let index = 1;
         for (const file of req.files) {
