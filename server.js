@@ -54,28 +54,50 @@ app.post('/upload', upload.array('images'), async (req, res) => {
                 const fullPath = path.join(folderPath, item);
                 const zipItemPath = path.join(zipPath, item);
 
-            if (fs.statSync(fullPath).isDirectory()) {
-                addFolderToZip(fullPath, zipItemPath);
-            } else {
-                outputZip.addLocalFile(fullPath, zipPath);
+                if (fs.statSync(fullPath).isDirectory()) {
+                    addFolderToZip(fullPath, zipItemPath);
+                } else {
+                    outputZip.addLocalFile(fullPath, zipPath);
+                }
+            });
+        };
+
+        addFolderToZip(baseFolder);
+
+        // --- UPDATED RESPONSE LOGIC TO FORCE .RPK DOWNLOADING ---
+        // 1. Create a physical temp file path on your server
+        const tempFilePath = path.join(__dirname, 'custom_gallery.rpk');
+        
+        // 2. Write the zip archive directly to disk as an .rpk
+        outputZip.writeZip(tempFilePath);
+
+        // 3. Set strict headers before streaming the real file
+        res.setHeader('Content-Type', 'application/octet-stream');
+        res.setHeader('Content-Transfer-Encoding', 'binary');
+
+        // 4. Send the file using native Express download (forces the name to stick)
+        res.download(tempFilePath, 'custom_gallery.rpk', (err) => {
+            if (err) {
+                console.error("Download error:", err);
+            }
+            // 5. Clean up the temp file after the download finishes
+            try {
+                if (fs.existsSync(tempFilePath)) {
+                    fs.unlinkSync(tempFilePath);
+                }
+            } catch (unlinkErr) {
+                console.error("Cleanup error:", unlinkErr);
             }
         });
-    };
+        // --------------------------------------------------------
 
-    addFolderToZip(baseFolder);
-
-    const buffer = outputZip.toBuffer();
-    res.setHeader('Content-Disposition', 'attachment; filename="custom_gallery.rpk"');
-    res.setHeader('Content-Type', 'application/octet-stream');
-    res.send(buffer);
-
-} catch (err) {
-    console.error("RPK ERROR:", err);
-    res.status(500).send("Error processing RPK");
-}
+    } catch (err) {
+        console.error("RPK ERROR:", err);
+        res.status(500).send("Error processing RPK");
+    }
 });
 
 // Start server
 app.listen(3000, () => {
-console.log("Server running on port 3000");
+    console.log("Server running on port 3000");
 });
