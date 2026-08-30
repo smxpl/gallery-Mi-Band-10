@@ -7,7 +7,7 @@ const upload = multer({ dest: 'uploads/' });
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
-const { exec } = require('child_process'); // 🌟 NEW: Needed to trigger terminal commands
+const { exec } = require('child_process'); 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -46,7 +46,7 @@ app.post('/upload', upload.array('images'), async (req, res) => {
 
         // 2. FILE QUANTITY LIMITING: Cut off arrays at a hardware boundary cap of 10 items
         const uploadedCount = Math.min(req.files.length, 10);
-        const uniqueProcessedPaths =;
+        const uniqueProcessedPaths = []; // 🌟 FIXED: Added brackets [] so it's a valid empty array
 
         // Process and save the unique images the user uploaded
         for (let i = 0; i < uploadedCount; i++) {
@@ -78,7 +78,8 @@ app.post('/upload', upload.array('images'), async (req, res) => {
         // 3. BACKFILL SLOTS AUTOMATICALLY: If user uploaded fewer than 10, fill slots up to 10
         let targetSlotIndex = uploadedCount + 1;
         while (targetSlotIndex <= 10) {
-            const sourceImageToClone = uniqueProcessedPaths[(targetSlotIndex - ) % uploadedCount];
+            // 🌟 FIXED: Restored missing indices (targetSlotIndex - 1)
+            const sourceImageToClone = uniqueProcessedPaths[(targetSlotIndex - 1) % uploadedCount];
             const destinationPath = path.join(galleryFolder, `img${targetSlotIndex}.png`);
             fs.copyFileSync(sourceImageToClone, destinationPath);
             targetSlotIndex++;
@@ -88,7 +89,7 @@ app.post('/upload', upload.array('images'), async (req, res) => {
         const configurationMetaData = { totalImages: uploadedCount };
         fs.writeFileSync(configFile, JSON.stringify(configurationMetaData, null, 2));
 
-        // 5. 🌟 TERMINAL COMPILER TRIGGER: Replaces AdmZip with real build execution!
+        // 5. TERMINAL COMPILER TRIGGER: Runs the real IDE building engines on Render!
         exec('npm run build', (compileError, stdout, stderr) => {
             if (compileError) {
                 console.error("Compilation engine crashed:", compileError);
@@ -135,4 +136,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running safely on port ${PORT}`);
 });
+
 
