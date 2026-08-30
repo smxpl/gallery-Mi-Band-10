@@ -44,7 +44,8 @@ app.post('/upload', upload.array('images'), async (req, res) => {
 
         let index = 1;
         for (const file of req.files) {
-            const outputPath = path.join(galleryFolder, `img_${index}.png`);
+            const outputPath = path.join(galleryFolder, `img${index}.png`);
+
 
             await sharp(file.path)
     .resize(192, 192)
