@@ -2,12 +2,11 @@
   <div class="main-container">
     <!-- VIEW A: THE VISUAL GALLERY -->
     <div if="{{ currentView === 'gallery' }}" class="panel gallery-bg">
-      
-      <!-- Using a native Stack layout element lets hardware layers separate cleanly -->
       <stack class="layer-stack">
         
         <!-- Touch Layer 1: Bottom Layer - Dedicated Image Slider Clicker -->
         <div class="gallery-clicker" onclick="nextImage">
+          <!-- 🌟 STABLE STATIC LAYOUT: Restored from your old script so images display perfectly! -->
           <div if="{{imageIndex === 1}}" class="slide"><image src="/common/img1.png" class="gallery-image"></image></div>
           <div if="{{imageIndex === 2}}" class="slide"><image src="/common/img2.png" class="gallery-image"></image></div>
           <div if="{{imageIndex === 3}}" class="slide"><image src="/common/img3.png" class="gallery-image"></image></div>
@@ -28,7 +27,6 @@
         </div>
 
       </stack>
-
     </div>
 
     <!-- VIEW B: THE ABOUT BRANDING SCREEN -->
@@ -37,10 +35,8 @@
         <div class="avatar-circle">
           <image src="/common/icon.png" class="avatar-img"></image>
         </div>
-        
         <text class="creator-title">Created By</text>
         <text class="creator-name">yourmombeanbo       (◣ _ ◢)メ</text> 
-        
         <text class="hint-text">Swipe Right to Return</text>
       </div>
     </div>
@@ -52,11 +48,28 @@ export default {
   private: {
     currentView: 'gallery', 
     imageIndex: 1,          
-    totalImages: 10 
+    totalImages: 3          // 🌟 DEFAULT BASELINE: Will be overwritten by config.json
+  },
+
+  onInit() {
+    this.loadAppConfiguration();
+  },
+
+  loadAppConfiguration() {
+    try {
+      // 🌟 DYNAMIC CONFIGURATION: Reads totalImages directly from config.json
+      const configData = require('../../config.json');
+      if (configData && configData.totalImages) {
+        this.totalImages = configData.totalImages;
+      }
+    } catch(e) {
+      console.error("Failed to load local config configuration, falling back.");
+    }
   },
 
   nextImage() {
     this.imageIndex++
+    // 🌟 DYNAMIC CAP: If totalImages is 3, it loops back to 1 immediately!
     if (this.imageIndex > this.totalImages) {
       this.imageIndex = 1
     }
@@ -96,7 +109,6 @@ export default {
   background-color: #000000;
 }
 
-/* The stack automatically isolates this click wrapper away from your photo elements */
 .top-row-overlay {
   width: 100%;
   height: 80px;
@@ -106,7 +118,7 @@ export default {
 }
 
 .info-button {
-  width: 50px; /* Sizing slightly expanded for reliable touch targets */
+  width: 50px; 
   height: 50px;
   border-radius: 25px;
   background-color: #333333;
@@ -140,7 +152,6 @@ export default {
   object-fit: contain;
 }
 
-/* About Branding Panel View Components */
 .about-bg {
   background-color: #000000;
 }
@@ -188,6 +199,7 @@ export default {
   font-size: 16px;
 }
 </style>
+
 
 
 
