@@ -19,10 +19,15 @@
     "url": "https://github.com/smxpl/MiBand10-RPK-Generator/issues"
   },
   "homepage": "https://github.com/smxpl/MiBand10-RPK-Generator#readme",
-  "dependencies": {
-    "adm-zip": "^0.6.0",
-    "express": "^5.2.1",
-    "multer": "^2.2.0",
-    "sharp": "^0.35.4"
+    "dependencies": {
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "sharp": "^0.33.4",
+    "adm-zip": "^0.5.12",
+    "aiot-toolkit": "^2.0.0" 
+  },
+  "scripts": {
+    "start": "node server.js",
+    "build": "aiot build" 
   }
-}
+

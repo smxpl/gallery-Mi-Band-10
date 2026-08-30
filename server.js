@@ -7,7 +7,7 @@ const upload = multer({ dest: 'uploads/' });
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
-const AdmZip = require('adm-zip');
+const { exec } = require('child_process'); // 🌟 NEW: Needed to trigger terminal commands
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Upload route enforcing dynamic counts, minimum constraints (2 photos), and image cloning
+// Upload route executing official dynamic compilation engines
 app.post('/upload', upload.array('images'), async (req, res) => {
     try {
         const baseFolder = path.join(__dirname, 'src');
@@ -46,7 +46,7 @@ app.post('/upload', upload.array('images'), async (req, res) => {
 
         // 2. FILE QUANTITY LIMITING: Cut off arrays at a hardware boundary cap of 10 items
         const uploadedCount = Math.min(req.files.length, 10);
-        const uniqueProcessedPaths = [];
+        const uniqueProcessedPaths =;
 
         // Process and save the unique images the user uploaded
         for (let i = 0; i < uploadedCount; i++) {
@@ -76,14 +76,10 @@ app.post('/upload', upload.array('images'), async (req, res) => {
         }
 
         // 3. BACKFILL SLOTS AUTOMATICALLY: If user uploaded fewer than 10, fill slots up to 10
-        // It cycles back and duplicates their own images so there are no empty slots or default placeholders!
         let targetSlotIndex = uploadedCount + 1;
         while (targetSlotIndex <= 10) {
-            // Find which unique user image to clone using a remainder loop
-            const sourceImageToClone = uniqueProcessedPaths[(targetSlotIndex - 1) % uploadedCount];
+            const sourceImageToClone = uniqueProcessedPaths[(targetSlotIndex - ) % uploadedCount];
             const destinationPath = path.join(galleryFolder, `img${targetSlotIndex}.png`);
-            
-            // Native file system copy operation
             fs.copyFileSync(sourceImageToClone, destinationPath);
             targetSlotIndex++;
         }
@@ -92,23 +88,40 @@ app.post('/upload', upload.array('images'), async (req, res) => {
         const configurationMetaData = { totalImages: uploadedCount };
         fs.writeFileSync(configFile, JSON.stringify(configurationMetaData, null, 2));
 
-        // Package everything using native zipper tool logic
-        const outputZip = new AdmZip();
-        outputZip.addLocalFolder(baseFolder);
-
-        const tempFilePath = path.join(__dirname, 'custom_gallery.rpk');
-        outputZip.writeZip(tempFilePath);
-
-        res.setHeader('Content-Type', 'application/octet-stream');
-        res.setHeader('Content-Transfer-Encoding', 'binary');
-
-        res.download(tempFilePath, 'custom_gallery.rpk', (err) => {
-            if (err) console.error("Download handling error:", err);
-            try {
-                if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
-            } catch (unlinkErr) {
-                console.error("Server asset cleaning trace error:", unlinkErr);
+        // 5. 🌟 TERMINAL COMPILER TRIGGER: Replaces AdmZip with real build execution!
+        exec('npm run build', (compileError, stdout, stderr) => {
+            if (compileError) {
+                console.error("Compilation engine crashed:", compileError);
+                return res.status(500).send("Internal Server Build Error.");
             }
+
+            // Target the freshly compiled, signed .rpk generated in Render's new dist folder
+            const compiledDistFolder = path.join(__dirname, 'dist');
+            
+            // Read the directory to find the generated package name dynamically
+            const filesInDist = fs.readdirSync(compiledDistFolder);
+            const rpkFileName = filesInDist.find(f => f.endsWith('.rpk'));
+
+            if (!rpkFileName) {
+                return res.status(500).send("Build error: Compiled package artifact missing.");
+            }
+
+            const finalRpkPath = path.join(compiledDistFolder, rpkFileName);
+
+            res.setHeader('Content-Type', 'application/octet-stream');
+            res.setHeader('Content-Transfer-Encoding', 'binary');
+
+            // Send the authentic compiled bundle straight back to the browser panel!
+            res.download(finalRpkPath, 'custom_gallery.rpk', (downloadErr) => {
+                if (downloadErr) console.error("Download processing trace error:", downloadErr);
+                
+                // Clean up server-side dist file trace artifacts safely after delivery
+                try {
+                    if (fs.existsSync(finalRpkPath)) fs.unlinkSync(finalRpkPath);
+                } catch (cleanupErr) {
+                    console.error("Post-build trace cleaning exception:", cleanupErr);
+                }
+            });
         });
 
     } catch (err) {
@@ -118,7 +131,6 @@ app.post('/upload', upload.array('images'), async (req, res) => {
 });
 
 // --- RENDER PORT BIND FIX ---
-// Render forces you to use their dynamic port system (PORT 10000 by default)
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running safely on port ${PORT}`);
