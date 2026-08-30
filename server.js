@@ -21,22 +21,27 @@ app.get('/', (req, res) => {
 });
 
 // Upload route
-// Upload route
 app.post('/upload', upload.array('images'), async (req, res) => {
     try {
         const baseFolder = path.join(__dirname, 'src');
         const galleryFolder = path.join(baseFolder, 'common');
 
+        // Render-safe folder creator: Creates the folders if Git ignored them
+        if (!fs.existsSync(baseFolder)) {
+            fs.mkdirSync(baseFolder, { recursive: true });
+        }
         if (!fs.existsSync(galleryFolder)) {
-            return res.status(500).send("common folder missing in src/");
+            fs.mkdirSync(galleryFolder, { recursive: true });
         }
 
-        // Clean out old images
+        // Clean out old images safely
         fs.readdirSync(galleryFolder).forEach(file => {
-            fs.unlinkSync(path.join(galleryFolder, file));
+            const filePath = path.join(galleryFolder, file);
+            if (fs.statSync(filePath).isFile()) {
+                fs.unlinkSync(filePath);
+            }
         });
 
-        // Process and save new images
         let index = 1;
         for (const file of req.files) {
             const outputPath = path.join(galleryFolder, `img_${index}.png`);
@@ -50,15 +55,14 @@ app.post('/upload', upload.array('images'), async (req, res) => {
             index++;
         }
 
-        // --- FIXED ZIPPER LOGIC HERE ---
+        // --- FIXED NATIVE ZIPPER LOGIC ---
         const outputZip = new AdmZip();
         
-        // This single line replaces your whole addFolderToZip function.
-        // It tells the zipper: "Go inside the 'src' folder, and zip everything inside it directly."
+        // Tells the zipper: "Go inside the 'src' folder, and zip everything inside it directly."
         outputZip.addLocalFolder(baseFolder);
-        // -------------------------------
+        // ---------------------------------
 
-        // --- UPDATED RESPONSE LOGIC TO FORCE .RPK DOWNLOADING ---
+        // --- RENDER-SAFE FILE DELIVERY ---
         const tempFilePath = path.join(__dirname, 'custom_gallery.rpk');
         
         outputZip.writeZip(tempFilePath);
@@ -83,4 +87,11 @@ app.post('/upload', upload.array('images'), async (req, res) => {
         console.error("RPK ERROR:", err);
         res.status(500).send("Error processing RPK");
     }
+});
+
+// --- RENDER PORT BIND FIX ---
+// Render forces you to use their dynamic port system (PORT 10000 by default)
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running safely on port ${PORT}`);
 });
