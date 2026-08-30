@@ -1,33 +1,29 @@
 {
   "name": "miband10-rpk-generator",
   "version": "1.0.0",
-  "description": "",
+  "description": "Xiaomi Smart Band 10 Custom Gallery Compiler",
   "main": "server.js",
+  "type": "commonjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "aiot build"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/smxpl/MiBand10-RPK-Generator.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/smxpl/MiBand10-RPK-Generator/issues"
   },
   "homepage": "https://github.com/smxpl/MiBand10-RPK-Generator#readme",
-    "dependencies": {
+  "dependencies": {
+    "adm-zip": "^0.5.12",
+    "aiot-toolkit": "^2.0.0",
     "express": "^4.19.2",
     "multer": "^1.4.5-lts.1",
-    "sharp": "^0.33.4",
-    "adm-zip": "^0.5.12",
-    "aiot-toolkit": "^2.0.0" 
+    "sharp": "^0.33.4"
   },
-  "scripts": {
-    "start": "node server.js",
-    "build": "aiot build" 
-  }
-
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
