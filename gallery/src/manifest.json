@@ -1,9 +1,9 @@
 {
-  "package": "com.application.watch.demo",
-  "name": "previewgallery",
+  "package": "com.mi.watch.calculator",
+  "name": "Gallery",
   "versionName": "1.0.0",
   "versionCode": 1,
-  "minPlatformVersion": 1200,
+  "minPlatformVersion": 1040,
   "icon": "/common/icon.png",
   "simulationVersion": "default",
   "deviceTypeList": [
