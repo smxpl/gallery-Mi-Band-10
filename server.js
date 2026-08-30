@@ -47,12 +47,8 @@ app.post('/upload', upload.array('images'), async (req, res) => {
             const outputPath = path.join(galleryFolder, `img_${index}.png`);
 
             await sharp(file.path)
-    .resize(192, 192) // Match the actual narrow aspect ratio of the watch screen!
-    .png({ 
-        quality: 60,       // Compresses the imagery payload
-        colours: 128,      // Trims down the heavy color palette index 
-        compressionLevel: 9 // Maximize space compression
-    })
+    .resize(192, 192)
+    .png()
     .toFile(outputPath);
 
             fs.unlinkSync(file.path);
